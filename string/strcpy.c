@@ -1,3 +1,5 @@
+/* strcpy function: copy string */
+
 #include <string.h>
 
 char *strcpy(char *s1, const char *s2) {
