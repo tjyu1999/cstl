@@ -2,13 +2,13 @@
 
 #include <stdlib.h>
 #include <stddef.h>
-#ifndef _YVALS.H
-#include "yvals.h"
+#ifndef _YVALS
+#include <yvals.h>
 #endif
 
-#define _SIZE_BLOCK 512
-#define _SIZE_CELL  ((sizeof(_cell) + _MEMBND & ~_MEMBND) - _CELL_OFF)
-#define _CELL_OFF   (sizeof(size_t) + _MEMBND & ~_MEMBND)
+#define SIZE_BLOCK  512
+#define SIZE_CELL   ((sizeof(_cell) + MEMBND & ~MEMBND) - CELL_OFFSET)
+#define CELL_OFFSET (sizeof(size_t) + MEMBND & ~MEMBND)
 
 typedef struct _cell {
     size_t _size;
