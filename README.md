@@ -1,3 +1,3 @@
 # cstl
 
-Source code of C standard library.
+The source code of C standard library.
