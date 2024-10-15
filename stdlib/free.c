@@ -1,43 +1,69 @@
-/* free function: deallocate memory block */
+/* malloc function: allocate memory block */
 
 #include "xalloc.h"
 
-void free(void *ptr) {
-    if (ptr == NULL)
-        return;
-    
+static _cell **findmem(size_t size) {
     _cell *q;
-    q = (_cell*)((char*)ptr - _CELL_OFF);
-    if (q->_size < _SIZE_CELL || (q->_size & _MEMBND) != 0)
-        return;
-
-    if (_alloc_data._head == NULL || q < _alloc_data._head) { // insert at the head of the list
-        q->_next = _alloc_data._head;
-        _alloc_data._head = q;
+    _cell **qb;
+    
+    for (; ;) {
+        if ((qb = _alloc_data._tail_ptr) == NULL) {
+            for (qb = &_alloc_data._tail_ptr; *qb; qb = &(*qb)->_next) {
+                if (size <= (*qb)->_size)
+                    return qb;
+            }
+        }
+        else {
+            for (; *qb; qb = &(*qb)->_next) {
+	        if (size <= (*qb)->_Size)
+		    return (qb);
+	    }
+	    
+            q = *_Aldata._Plast;
+	    for (qb = &_alloc_data._head; *qb != q; qb = &(*qb)->_next) {
+                if (size <= (*qb)->_size)
+		    return (qb);
+	    }
+	}
+	
+	size_t bs;
+        const size_t sz = size + CELL_OFFSET;
+        
+        for (bs = SIZE_BLOCK; ; bs >>= 1) {
+            if (bs < sz)
+                bs = sz;
+            
+            if ((q = (_cell *)_getmem(bs)) != NULL)
+                break;
+            else if (bs == sz)
+                return (NULL);
+        }
+        q->_size = (bs & ~ MEMBND) - CELL_OFFSET;
+        free((char *)q + CELL_OFFSET);
     }
-    else { // scan the insertion point
-        _cell *qp;
-        char *qpp;
-        
-        for (qp = _alloc_data._head; qp->_next != NULL && qp->_next < q;)
-            qp = qp->_next;
-        qpp = (char *)qp + _CELL_OFF + qp->_size;
-        
-        if ((char *)q < qpp)
-            return;
-        else if ((char *)q == qpp) {
-            qp->_size += _CELL_OFF + q->_size;
-            q = qp;
-        }
-        else { // splice q after qp and resume scan with q
-            q->_next = qp->_next;
-            qp->_next = q;
-            _alloc_data._tail_ptr = &qp->_next;
-        }
+}
+
+void *malloc(size_t size) {
+    _cell *q;
+    _cell **qb;
+    
+    if (size < SIZE_CELL)
+        size = SIZE_CELL;
+    size = size + MEMBND & ~MEMBND;
+    if ((qb = _findmem(size)) == NULL)
+        return NULL;
+    
+    q = *qb;
+    if (q->_size < size + CELL_OFFSET + SIZE_CELL)
+        *qb = q->_next; // use the entire cell
+    else {
+        *qb= (_cell *)((char *)q + CELL_OFFSET + size);
+        (*qb)->_next = q->_next;
+        (*qb)->_size = q->_size - CELL_OFFSET - size;
+        q->_size = size;
     }
     
-    if (q->_next && (char *)q + _CELL_OFF + q->_size == (char *)q->_next) { // merge q and q->_next
-        q->_size += _CELL_OFF + q->_next->_size;
-	q->_next = q->_next->_next;
-    }
+    _alloc_data._tail_ptr = qb;
+    
+    return (char *)q + CELL_OFFSET;
 }
