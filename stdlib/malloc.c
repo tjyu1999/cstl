@@ -25,7 +25,8 @@ static _cell **_findmem(size_t size) {
 		    return (qb);
 	    }
 	}
-	
+
+	// try to buy more space
 	size_t bs;
         const size_t sz = size + CELL_OFFSET;
         
