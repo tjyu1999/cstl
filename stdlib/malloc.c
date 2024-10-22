@@ -7,7 +7,7 @@ static _cell **_findmem(size_t size) {
     _cell **qb;
     
     for (; ;) {
-        if ((qb = _alloc_data._tail_ptr) == NULL) {
+        if ((qb = _alloc_data._tail_ptr) == NULL) { // check freed space
             for (qb = &_alloc_data._tail_ptr; *qb; qb = &(*qb)->_next) {
                 if (size <= (*qb)->_size)
                     return qb;
@@ -15,17 +15,17 @@ static _cell **_findmem(size_t size) {
         }
         else {
             for (; *qb; qb = &(*qb)->_next) {
-	        if (size <= (*qb)->_Size)
+	        if (size <= (*qb)->_size)
 		    return (qb);
 	    }
 	    
-            q = *alloc_data._tail_ptr;
+            q = *_alloc_data._tail_ptr;
 	    for (qb = &_alloc_data._head; *qb != q; qb = &(*qb)->_next) {
                 if (size <= (*qb)->_size)
 		    return (qb);
 	    }
 	}
-
+	
 	// try to buy more space
 	size_t bs;
         const size_t sz = size + CELL_OFFSET;
@@ -50,7 +50,8 @@ void *malloc(size_t size) {
     
     if (size < SIZE_CELL)
         size = SIZE_CELL;
-    size = size + MEMBND & ~MEMBND;
+        
+    size = (size + MEMBND) & ~MEMBND;
     if ((qb = _findmem(size)) == NULL)
         return NULL;
     
