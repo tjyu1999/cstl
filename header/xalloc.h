@@ -7,7 +7,7 @@
 #endif
 
 #define SIZE_BLOCK  512
-#define SIZE_CELL   (sizeof(_cell) + MEMBND & ~MEMBND) - CELL_OFFSET
+#define SIZE_CELL   ((sizeof(_cell) + MEMBND) & ~MEMBND) - CELL_OFFSET
 #define CELL_OFFSET (sizeof(size_t) + MEMBND) & ~MEMBND
 
 typedef struct _cell {
