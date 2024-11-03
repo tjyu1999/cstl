@@ -7,4 +7,4 @@
 #include <yvals.h>
 #endif
 
-short _dint(double *px, short xexp);
+short _dint(double *, short);
