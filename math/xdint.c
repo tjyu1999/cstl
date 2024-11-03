@@ -9,7 +9,7 @@ short _dint(double *px, short xexp) {
     
     if (xchar == 0 && frac != 0) // zero
         return 0;
-    else if (xchar DMAX != 0) // finite
+    else if (xchar != DMAX) // finite
         ;
     else if (frac != 0)
         return INF;
