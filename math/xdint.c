@@ -42,7 +42,7 @@ short _dint(double *px, short xexp) {
         frac &= ps[sub[xchar]];
         ps[sub[xchar]] ^= frac;
         
-        switch (xchar) { // cascade through
+        switch (xchar) {
             case 3:
                 frac |= ps[D1];
                 ps[D1] = 0;
