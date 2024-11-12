@@ -16,13 +16,13 @@ static _cell **_findmem(size_t size) {
         else {
             for (; *qb; qb = &(*qb)->_next) {
 	        if (size <= (*qb)->_size)
-		    return (qb);
+		    return qb;
 	    }
 	    
             q = *_alloc_data._tail_ptr;
 	    for (qb = &_alloc_data._head; *qb != q; qb = &(*qb)->_next) {
                 if (size <= (*qb)->_size)
-		    return (qb);
+		    return qb;
 	    }
 	}
 	
@@ -34,13 +34,13 @@ static _cell **_findmem(size_t size) {
             if (bs < sz)
                 bs = sz;
             
-            if ((q = (_cell *)_getmem(bs)) != NULL)
+            if ((q = (_cell *) _getmem(bs)) != NULL)
                 break;
             else if (bs == sz)
                 return (NULL);
         }
-        q->_size = (bs & ~ MEMBND) - CELL_OFFSET;
-        free((char *)q + CELL_OFFSET);
+        q->_size = (bs & ~MEMBND) - CELL_OFFSET;
+        free((char *) q + CELL_OFFSET);
     }
 }
 
@@ -59,7 +59,7 @@ void *malloc(size_t size) {
     if (q->_size < size + CELL_OFFSET + SIZE_CELL)
         *qb = q->_next; // use the entire cell
     else {
-        *qb= (_cell *)((char *)q + CELL_OFFSET + size);
+        *qb= (_cell *) ((char *) q + CELL_OFFSET + size);
         (*qb)->_next = q->_next;
         (*qb)->_size = q->_size - CELL_OFFSET - size;
         q->_size = size;
@@ -67,5 +67,5 @@ void *malloc(size_t size) {
     
     _alloc_data._tail_ptr = qb;
     
-    return (char *)q + CELL_OFFSET;
+    return (char *) q + CELL_OFFSET;
 }
