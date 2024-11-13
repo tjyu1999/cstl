@@ -3,7 +3,7 @@
 #include "xmath.h"
 
 short _dint(double *px, short xexp) {
-    unsigned short *ps = (unsigned short *)px;
+    unsigned short *ps = (unsigned short *) px;
     unsigned short frac = ps[D0] & DFRAC || ps[D1] || ps[D2] || ps[D3];
     short xchar = (ps[D0] & DMASK) >> DOFF;
     
