@@ -8,20 +8,20 @@ static _cell **_findmem(size_t size) {
     
     for (; ;) {
         if ((qb = _alloc_data._tail_ptr) == NULL) { // check freed space
-            for (qb = &_alloc_data._tail_ptr; *qb; qb = &(*qb)->_next) {
-                if (size <= (*qb)->_size)
+            for (qb = &_alloc_data._tail_ptr; *qb; qb = &*qb->_next) {
+                if (size <= *qb->_size)
                     return qb;
             }
         }
         else {
             for (; *qb; qb = &(*qb)->_next) {
-	        if (size <= (*qb)->_size)
+	        if (size <= *qb->_size)
 		    return qb;
 	    }
 	    
             q = *_alloc_data._tail_ptr;
-	    for (qb = &_alloc_data._head; *qb != q; qb = &(*qb)->_next) {
-                if (size <= (*qb)->_size)
+	    for (qb = &_alloc_data._head; *qb != q; qb = &*qb->_next) {
+                if (size <= *qb->_size)
 		    return qb;
 	    }
 	}
@@ -60,8 +60,8 @@ void *malloc(size_t size) {
         *qb = q->_next; // use the entire cell
     else {
         *qb= (_cell *) ((char *) q + CELL_OFFSET + size);
-        (*qb)->_next = q->_next;
-        (*qb)->_size = q->_size - CELL_OFFSET - size;
+        *qb->_next = q->_next;
+        *qb->_size = q->_size - CELL_OFFSET - size;
         q->_size = size;
     }
     
