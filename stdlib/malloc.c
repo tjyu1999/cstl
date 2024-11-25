@@ -8,19 +8,19 @@ static _cell **_findmem(size_t size) {
     
     for (; ;) {
         if ((qb = _alloc_data._tail_ptr) == NULL) { // check freed space
-            for (qb = &_alloc_data._tail_ptr; *qb; qb = &(*qb)->_next) {
+            for (qb = &_alloc_data._tail_ptr; *qb; qb = &*qb->_next) {
                 if (size <= *qb->_size)
                     return qb;
             }
         }
         else {
-            for (; *qb; qb = &(*qb)->_next) {
+            for (; *qb; qb = &*qb->_next) {
 	        if (size <= *qb->_size)
 		    return qb;
 	    }
 	    
             q = *_alloc_data._tail_ptr;
-	    for (qb = &_alloc_data._head; *qb != q; qb = &(*qb)->_next) {
+	    for (qb = &_alloc_data._head; *qb != q; qb = &*qb->_next) {
                 if (size <= *qb->_size)
 		    return qb;
 	    }
@@ -37,7 +37,7 @@ static _cell **_findmem(size_t size) {
             if ((q = (_cell *) _getmem(bs)) != NULL)
                 break;
             else if (bs == sz)
-                return (NULL);
+                return NULL;
         }
         q->_size = (bs & ~MEMBND) - CELL_OFFSET;
         free((char *) q + CELL_OFFSET);
